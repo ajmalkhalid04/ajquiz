@@ -1,0 +1,126 @@
+-- ============================================================
+-- AjQuiz Migration — Add juz_start / juz_end to quran_surahs
+-- Run this AFTER seed/surahs.sql
+-- ============================================================
+
+alter table quran_surahs
+  add column if not exists juz_start int,
+  add column if not exists juz_end   int;
+
+-- Each row: (surah_number, juz_start, juz_end)
+-- Boundaries derived from the standard 30-juz division.
+-- Surahs that span a juz boundary have juz_start < juz_end.
+update quran_surahs set juz_start =  1, juz_end =  1 where number =   1;
+update quran_surahs set juz_start =  1, juz_end =  3 where number =   2;
+update quran_surahs set juz_start =  3, juz_end =  4 where number =   3;
+update quran_surahs set juz_start =  4, juz_end =  6 where number =   4;
+update quran_surahs set juz_start =  6, juz_end =  7 where number =   5;
+update quran_surahs set juz_start =  7, juz_end =  8 where number =   6;
+update quran_surahs set juz_start =  8, juz_end =  9 where number =   7;
+update quran_surahs set juz_start =  9, juz_end = 10 where number =   8;
+update quran_surahs set juz_start = 10, juz_end = 11 where number =   9;
+update quran_surahs set juz_start = 11, juz_end = 11 where number =  10;
+update quran_surahs set juz_start = 11, juz_end = 12 where number =  11;
+update quran_surahs set juz_start = 12, juz_end = 13 where number =  12;
+update quran_surahs set juz_start = 13, juz_end = 13 where number =  13;
+update quran_surahs set juz_start = 13, juz_end = 13 where number =  14;
+update quran_surahs set juz_start = 14, juz_end = 14 where number =  15;
+update quran_surahs set juz_start = 14, juz_end = 14 where number =  16;
+update quran_surahs set juz_start = 15, juz_end = 15 where number =  17;
+update quran_surahs set juz_start = 15, juz_end = 16 where number =  18;
+update quran_surahs set juz_start = 16, juz_end = 16 where number =  19;
+update quran_surahs set juz_start = 16, juz_end = 16 where number =  20;
+update quran_surahs set juz_start = 17, juz_end = 17 where number =  21;
+update quran_surahs set juz_start = 17, juz_end = 17 where number =  22;
+update quran_surahs set juz_start = 18, juz_end = 18 where number =  23;
+update quran_surahs set juz_start = 18, juz_end = 18 where number =  24;
+update quran_surahs set juz_start = 18, juz_end = 19 where number =  25;
+update quran_surahs set juz_start = 19, juz_end = 19 where number =  26;
+update quran_surahs set juz_start = 19, juz_end = 20 where number =  27;
+update quran_surahs set juz_start = 20, juz_end = 20 where number =  28;
+update quran_surahs set juz_start = 20, juz_end = 21 where number =  29;
+update quran_surahs set juz_start = 21, juz_end = 21 where number =  30;
+update quran_surahs set juz_start = 21, juz_end = 21 where number =  31;
+update quran_surahs set juz_start = 21, juz_end = 21 where number =  32;
+update quran_surahs set juz_start = 21, juz_end = 22 where number =  33;
+update quran_surahs set juz_start = 22, juz_end = 22 where number =  34;
+update quran_surahs set juz_start = 22, juz_end = 22 where number =  35;
+update quran_surahs set juz_start = 22, juz_end = 23 where number =  36;
+update quran_surahs set juz_start = 23, juz_end = 23 where number =  37;
+update quran_surahs set juz_start = 23, juz_end = 23 where number =  38;
+update quran_surahs set juz_start = 23, juz_end = 24 where number =  39;
+update quran_surahs set juz_start = 24, juz_end = 24 where number =  40;
+update quran_surahs set juz_start = 24, juz_end = 25 where number =  41;
+update quran_surahs set juz_start = 25, juz_end = 25 where number =  42;
+update quran_surahs set juz_start = 25, juz_end = 25 where number =  43;
+update quran_surahs set juz_start = 25, juz_end = 25 where number =  44;
+update quran_surahs set juz_start = 25, juz_end = 25 where number =  45;
+update quran_surahs set juz_start = 26, juz_end = 26 where number =  46;
+update quran_surahs set juz_start = 26, juz_end = 26 where number =  47;
+update quran_surahs set juz_start = 26, juz_end = 26 where number =  48;
+update quran_surahs set juz_start = 26, juz_end = 26 where number =  49;
+update quran_surahs set juz_start = 26, juz_end = 26 where number =  50;
+update quran_surahs set juz_start = 26, juz_end = 27 where number =  51;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  52;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  53;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  54;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  55;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  56;
+update quran_surahs set juz_start = 27, juz_end = 27 where number =  57;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  58;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  59;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  60;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  61;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  62;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  63;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  64;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  65;
+update quran_surahs set juz_start = 28, juz_end = 28 where number =  66;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  67;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  68;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  69;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  70;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  71;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  72;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  73;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  74;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  75;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  76;
+update quran_surahs set juz_start = 29, juz_end = 29 where number =  77;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  78;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  79;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  80;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  81;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  82;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  83;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  84;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  85;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  86;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  87;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  88;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  89;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  90;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  91;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  92;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  93;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  94;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  95;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  96;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  97;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  98;
+update quran_surahs set juz_start = 30, juz_end = 30 where number =  99;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 100;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 101;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 102;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 103;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 104;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 105;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 106;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 107;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 108;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 109;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 110;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 111;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 112;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 113;
+update quran_surahs set juz_start = 30, juz_end = 30 where number = 114;
