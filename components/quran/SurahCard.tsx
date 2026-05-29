@@ -71,11 +71,11 @@ function ActiveCard({ surah, prevSurah, nextSurah, facts }: Omit<SurahCardProps,
         {/* Box B — Revelation city */}
         <div className="px-5 py-5 flex flex-col justify-center">
           <p className={`${LABEL_CLS} text-emerald-300`}>Revealed in</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-2xl leading-none" role="img" aria-label={surah.revelation_type}>
+          <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
+            <span className="text-xl leading-none shrink-0" role="img" aria-label={surah.revelation_type}>
               {isMeccan ? '🕋' : '🕌'}
             </span>
-            <span className={`${VALUE_CLS} text-white`}>
+            <span className="text-xl font-black text-white leading-tight truncate">
               {isMeccan ? 'Mecca' : 'Madina'}
             </span>
           </div>
@@ -107,7 +107,7 @@ function ActiveCard({ surah, prevSurah, nextSurah, facts }: Omit<SurahCardProps,
         {/* Box C — Juz */}
         <div className="px-5 py-4 border-r border-gray-100 dark:border-gray-600 text-center">
           <p className={`${LABEL_CLS} text-gray-400 dark:text-gray-400`}>Juz</p>
-          <p className={`${VALUE_CLS} text-gray-800 dark:text-gray-100`}>{juzLabel(surah)}</p>
+          <p className="text-xl font-black leading-tight text-gray-800 dark:text-gray-100 whitespace-nowrap">{juzLabel(surah)}</p>
         </div>
 
         {/* Box D — Verses */}

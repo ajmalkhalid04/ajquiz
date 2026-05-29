@@ -61,30 +61,33 @@ export default function PracticePage() {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      const withJuz = await getSupabase()
-        .from('quran_surahs')
-        .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count, juz_start, juz_end')
-        .order('number', { ascending: true })
+      try {
+        const withJuz = await getSupabase()
+          .from('quran_surahs')
+          .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count, juz_start, juz_end')
+          .order('number', { ascending: true })
 
-      const { data, error } = withJuz.error
-        ? await getSupabase()
-            .from('quran_surahs')
-            .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count')
-            .order('number', { ascending: true })
-        : withJuz
+        const { data, error } = withJuz.error
+          ? await getSupabase()
+              .from('quran_surahs')
+              .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count')
+              .order('number', { ascending: true })
+          : withJuz
 
-      if (cancelled) return
-      if (error || !data) { setError(true); setLoading(false); return }
+        if (cancelled) return
+        if (error || !data) { setError(true); setLoading(false); return }
 
-      // Fetch all facts in parallel — small table, no per-swipe requests
-      const { data: factsData } = await getSupabase()
-        .from('surah_facts')
-        .select('id, surah_number, fact_type, title, description, ayah_ref, hadith_grade, hadith_ref')
+        const { data: factsData } = await getSupabase()
+          .from('surah_facts')
+          .select('id, surah_number, fact_type, title, description, ayah_ref, hadith_grade, hadith_ref')
 
-      if (cancelled) return
-      setSurahs(data as Surah[])
-      setAllFacts((factsData ?? []) as SurahFact[])
-      setLoading(false)
+        if (cancelled) return
+        setSurahs(data as Surah[])
+        setAllFacts((factsData ?? []) as SurahFact[])
+        setLoading(false)
+      } catch {
+        if (!cancelled) { setError(true); setLoading(false) }
+      }
     }
     load()
     return () => { cancelled = true }
@@ -292,15 +295,7 @@ export default function PracticePage() {
         )}
       </div>
 
-      {/* Practice this surah */}
-      <Link
-        href={`/quiz/quran/surah/${currSurah.number}`}
-        className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 py-3 text-white font-semibold active:scale-95 transition-all"
-      >
-        Practice this surah →
-      </Link>
-
-      {/* Navigation */}
+      {/* Navigation + Practice */}
       <div className="flex gap-3 pb-4">
         <button
           onClick={prev}
@@ -309,6 +304,12 @@ export default function PracticePage() {
         >
           ← Prev
         </button>
+        <Link
+          href={`/quiz/quran/surah/${currSurah.number}`}
+          className="flex-[2] flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 py-3 text-white font-semibold active:scale-95 transition-all text-sm"
+        >
+          Practice →
+        </Link>
         <button
           onClick={next}
           disabled={index === surahs.length - 1}
