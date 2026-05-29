@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 
 export const metadata: Metadata = {
   title: 'AJQuiz',
-  description: 'Test your Islamic knowledge with AJQuiz',
+  description: 'AJQuiz — challenge yourself and grow your knowledge.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
