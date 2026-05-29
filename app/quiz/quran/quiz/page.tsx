@@ -95,15 +95,19 @@ export default function QuranQuizPage() {
   useEffect(() => {
     let cancelled = false
     async function fetchSurahs() {
-      const { data, error } = await getSupabase()
-        .from('quran_surahs')
-        .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count')
-        .order('number', { ascending: true })
+      try {
+        const { data, error } = await getSupabase()
+          .from('quran_surahs')
+          .select('number, name_arabic, name_english, name_meaning, revelation_type, verse_count')
+          .order('number', { ascending: true })
 
-      if (cancelled) return
-      if (error || !data) { setPhase('error'); return }
-      setSurahs(data as Surah[])
-      startRound(data as Surah[])
+        if (cancelled) return
+        if (error || !data) { setPhase('error'); return }
+        setSurahs(data as Surah[])
+        startRound(data as Surah[])
+      } catch {
+        if (!cancelled) setPhase('error')
+      }
     }
     fetchSurahs()
     return () => { cancelled = true }

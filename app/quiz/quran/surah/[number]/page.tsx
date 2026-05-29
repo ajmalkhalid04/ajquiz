@@ -92,7 +92,7 @@ function buildQuestions(surah: Surah, all: Surah[], allFacts: SurahFact[]): Ques
 
   // Q6 — verse count (if available)
   if (surah.verse_count != null) {
-    const verseOthers = others.filter((s) => s.verse_count != null).slice(0, 3)
+    const verseOthers = others.filter((s) => s.verse_count != null && s.verse_count !== surah.verse_count).slice(0, 3)
     qs.push({
       question: `How many verses does ${surah.name_english} have?`,
       choices: shuffle([String(surah.verse_count), ...verseOthers.map((s) => String(s.verse_count))]),
@@ -370,9 +370,9 @@ export default function SurahPracticePage() {
 
         {/* Choices */}
         <div className={`grid gap-3 ${q.choices.length === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
-          {q.choices.map((choice) => (
+          {q.choices.map((choice, i) => (
             <button
-              key={choice}
+              key={i}
               onClick={() => handleAnswer(choice)}
               disabled={selected !== null}
               className={choiceStyle(choice, selected, q.correct)}
