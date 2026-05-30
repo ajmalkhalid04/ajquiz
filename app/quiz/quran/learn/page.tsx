@@ -8,9 +8,6 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-const PEEK = 60
-const GAP  = 12
-
 /**
  * Phonetic normalizer for Arabic transliteration variants.
  * Strips the definite article (al/an/ar…), collapses q→k,
@@ -22,7 +19,7 @@ const GAP  = 12
 function normalize(s: string): string {
   return s
     .toLowerCase()
-    .replace(/[-'‘’\s]/g, '') // strip hyphens, apostrophes, spaces
+    .replace(/[-'''\s]/g, '') // strip hyphens, apostrophes, spaces
     .replace(/ph/g, 'f')                // ph → f
     .replace(/kh/g, 'x')               // kh → x (distinct from plain k)
     .replace(/sh/g, 'c')               // sh → c (distinct from s)
@@ -32,6 +29,20 @@ function normalize(s: string): string {
     .replace(/aa/g, 'a')               // long-a
     .replace(/oo|ou|uw|ue/g, 'u')      // long-u variants
     .replace(/^(al|an|ar|as|at|az|ad)/, '') // strip Arabic definite article
+}
+
+function DotIndicator({ current, total }: { current: number; total: number }) {
+  return (
+    <div className="flex items-center justify-center gap-1.5">
+      <div className={`rounded-full transition-all duration-200 w-1.5 h-1.5 ${
+        current > 0 ? 'bg-gray-300 dark:bg-gray-600' : 'bg-transparent'
+      }`} />
+      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 transition-all duration-200" />
+      <div className={`rounded-full transition-all duration-200 w-1.5 h-1.5 ${
+        current < total - 1 ? 'bg-gray-300 dark:bg-gray-600' : 'bg-transparent'
+      }`} />
+    </div>
+  )
 }
 
 export default function PracticePage() {
@@ -118,6 +129,16 @@ export default function PracticePage() {
   const prev = useCallback(() => setIndex((i) => Math.max(0, i - 1)), [])
   const next = useCallback(() => setIndex((i) => Math.min(surahs.length - 1, i + 1)), [surahs.length])
 
+  // Keyboard arrow navigation
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [prev, next])
+
   function onTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
   function onTouchEnd(e: React.TouchEvent) {
     if (touchStartX.current === null) return
@@ -169,22 +190,17 @@ export default function PracticePage() {
     ? allFacts.filter((f) => f.surah_number === surahs[index].number)
     : []
 
-  const cardW    = containerW > 0 ? containerW - 2 * PEEK : 0
-  const prevLeft = PEEK - cardW - GAP
-  const currLeft = PEEK
-  const nextLeft = PEEK + cardW + GAP
-
-  const prevSurah = index > 0              ? surahs[index - 1] : null
   const currSurah = surahs[index]
+  const prevSurah = index > 0               ? surahs[index - 1] : null
   const nextSurah = index < surahs.length - 1 ? surahs[index + 1] : null
 
   return (
-    <div className="max-w-xl mx-auto flex flex-col gap-5">
+    <div className="max-w-xl mx-auto flex flex-col gap-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/quiz/quran" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm">← Back</Link>
-          <h1 className="text-xl font-bold text-gray-700 dark:text-gray-200">Learn</h1>
+          <h1 className="text-base font-bold text-gray-700 dark:text-gray-200">Learn</h1>
         </div>
         <span className="text-sm text-gray-400 dark:text-gray-500">{index + 1} / {surahs.length}</span>
       </div>
@@ -238,35 +254,20 @@ export default function PracticePage() {
         )}
       </div>
 
-      {/* Carousel */}
-      <div
-        ref={containerRef}
-        className="relative overflow-hidden"
-        style={{ height: 480 }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        {containerW > 0 && (
-          <>
-            {prevSurah && (
-              <div
-                className="absolute top-0 bottom-0 cursor-pointer"
-                style={{ left: prevLeft, width: cardW }}
-                onClick={prev}
-              >
-                <SurahCard
-                  surah={prevSurah}
-                  prevSurah={index > 1 ? surahs[index - 2] : null}
-                  nextSurah={currSurah}
-                  active={false}
-                />
-              </div>
-            )}
-
+      {/* Carousel — full-width, no peek cards */}
+      <div className="rounded-[2rem] bg-gradient-to-b from-emerald-100/40 via-white to-white">
+        <div
+          ref={containerRef}
+          className="relative overflow-hidden rounded-3xl bg-white"
+          style={{ height: 420 }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {containerW > 0 && (
             <div
               key={index}
               className="absolute top-0 bottom-0"
-              style={{ left: currLeft, width: cardW }}
+              style={{ left: 0, width: containerW }}
             >
               <SurahCard
                 surah={currSurah}
@@ -276,48 +277,20 @@ export default function PracticePage() {
                 active
               />
             </div>
-
-            {nextSurah && (
-              <div
-                className="absolute top-0 bottom-0 cursor-pointer"
-                style={{ left: nextLeft, width: cardW }}
-                onClick={next}
-              >
-                <SurahCard
-                  surah={nextSurah}
-                  prevSurah={currSurah}
-                  nextSurah={index < surahs.length - 2 ? surahs[index + 2] : null}
-                  active={false}
-                />
-              </div>
-            )}
-          </>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Navigation + Practice */}
-      <div className="flex gap-3 pb-4">
-        <button
-          onClick={prev}
-          disabled={index === 0}
-          className="flex-1 rounded-xl border-2 border-gray-200 dark:border-gray-600 py-3 font-semibold text-gray-600 dark:text-gray-300 hover:border-emerald-400 hover:text-emerald-700 dark:hover:border-emerald-500 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
-        >
-          ← Prev
-        </button>
-        <Link
-          href={`/quiz/quran/surah/${currSurah.number}`}
-          className="flex-[2] flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 py-3 text-white font-semibold active:scale-95 transition-all text-sm"
-        >
-          Practice →
-        </Link>
-        <button
-          onClick={next}
-          disabled={index === surahs.length - 1}
-          className="flex-1 rounded-xl border-2 border-gray-200 dark:border-gray-600 py-3 font-semibold text-gray-600 dark:text-gray-300 hover:border-emerald-400 hover:text-emerald-700 dark:hover:border-emerald-500 dark:hover:text-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
-        >
-          Next →
-        </button>
-      </div>
+      {/* Dot indicator */}
+      <DotIndicator current={index} total={surahs.length} />
+
+      {/* Practice button */}
+      <Link
+        href={`/quiz/quran/surah/${currSurah.number}`}
+        className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 py-3 text-white font-semibold active:scale-95 transition-all mb-4"
+      >
+        Practice this surah →
+      </Link>
     </div>
   )
 }

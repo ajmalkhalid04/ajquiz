@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
         <ThemeProvider>
           <Header />
-          <main className="mx-auto max-w-4xl px-4 py-8">
+          <main className="mx-auto max-w-4xl px-4 py-4">
             {children}
           </main>
         </ThemeProvider>

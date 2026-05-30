@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Surah, SurahFact } from '@/types/quiz'
 
 interface SurahCardProps {
@@ -24,52 +25,26 @@ function factBadgeClass(grade: string | null): string {
   return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-300'
 }
 
-/* ── Peek (inactive) card ── */
-function PeekCard({ surah }: { surah: Surah }) {
-  return (
-    <div className="h-full rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col opacity-55 hover:opacity-80 transition-opacity duration-200">
-      <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 px-5 py-4 grid grid-cols-2 gap-3">
-        <div>
-          <p className={`${LABEL_CLS} text-emerald-300`}>Surah</p>
-          <p className={`${VALUE_CLS} text-white text-2xl`}>{surah.number}</p>
-        </div>
-        <div className="flex flex-col justify-center">
-          <p className={`${LABEL_CLS} text-emerald-300`}>Origin</p>
-          <p className="text-lg leading-none">
-            {surah.revelation_type === 'Meccan' ? '🕋' : '🕌'}
-          </p>
-        </div>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 px-4 py-4 bg-white dark:bg-gray-800 text-center">
-        <p dir="rtl" className="text-3xl font-bold text-gray-800 dark:text-gray-100 leading-snug"
-          style={{ fontFamily: "'Amiri', serif" }}>
-          {surah.name_arabic}
-        </p>
-        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{surah.name_english}</p>
-      </div>
-    </div>
-  )
-}
-
 /* ── Active (center) card ── */
 function ActiveCard({ surah, prevSurah, nextSurah, facts }: Omit<SurahCardProps, 'active'>) {
   const isMeccan = surah.revelation_type === 'Meccan'
-  const visibleFacts = (facts ?? []).slice(0, 3)
+  const allFacts = facts ?? []
+  const [tab, setTab] = useState<'info' | 'facts'>('info')
 
   return (
-    <div className="h-full rounded-3xl overflow-hidden flex flex-col shadow-2xl bg-white dark:bg-gray-800 border border-emerald-100 dark:border-emerald-800">
+    <div className="h-full rounded-3xl overflow-hidden flex flex-col shadow-2xl bg-white dark:bg-gray-800 ring-1 ring-emerald-100 dark:ring-emerald-800">
 
       {/* ── Row 1: 2-box header (Surah # | Revelation origin) ── */}
       <div className="grid grid-cols-2 bg-gradient-to-br from-emerald-600 to-emerald-800">
 
         {/* Box A — Surah number */}
-        <div className="px-5 py-5 border-r border-white/10">
+        <div className="px-4 py-4 border-r border-white/10">
           <p className={`${LABEL_CLS} text-emerald-300`}>Surah</p>
           <p className="text-4xl font-black text-white leading-none">{surah.number}</p>
         </div>
 
         {/* Box B — Revelation city */}
-        <div className="px-5 py-5 flex flex-col justify-center">
+        <div className="px-4 py-4 flex flex-col justify-center">
           <p className={`${LABEL_CLS} text-emerald-300`}>Revealed in</p>
           <p className="text-2xl leading-none mt-1" role="img" aria-label={surah.revelation_type}>
             {isMeccan ? '🕋' : '🕌'}
@@ -80,70 +55,105 @@ function ActiveCard({ surah, prevSurah, nextSurah, facts }: Omit<SurahCardProps,
         </div>
       </div>
 
-      {/* ── Row 2: Arabic + English + Meaning (hero section) ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-5 text-center gap-2 bg-white dark:bg-gray-800">
-        <p
-          dir="rtl"
-          className="text-5xl font-bold text-gray-900 dark:text-gray-100 leading-snug"
-          style={{ fontFamily: "'Amiri', serif" }}
+      {/* ── Tab bar ── */}
+      <div className="flex border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <button
+          onClick={() => setTab('info')}
+          className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
+            tab === 'info'
+              ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500'
+              : 'text-gray-400 dark:text-gray-500'
+          }`}
         >
-          {surah.name_arabic}
-        </p>
-        <p className="text-lg font-bold text-gray-700 dark:text-gray-200 mt-1">
-          {surah.name_english}
-        </p>
-        {surah.name_meaning && (
-          <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-            &ldquo;{surah.name_meaning}&rdquo;
-          </p>
-        )}
+          Info
+        </button>
+        <button
+          onClick={() => setTab('facts')}
+          className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
+            tab === 'facts'
+              ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500'
+              : 'text-gray-400 dark:text-gray-500'
+          }`}
+        >
+          Facts{allFacts.length > 0 ? ` (${allFacts.length})` : ''}
+        </button>
       </div>
 
-      {/* ── Row 3: 2-box info strip (Juz | Verses) ── */}
-      <div className="grid grid-cols-2 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
-
-        {/* Box C — Juz */}
-        <div className="px-5 py-4 border-r border-gray-100 dark:border-gray-600 text-center">
-          <p className={`${LABEL_CLS} text-gray-400 dark:text-gray-400`}>Juz</p>
-          <p className="text-xl font-black leading-tight text-gray-800 dark:text-gray-100 whitespace-nowrap">{juzLabel(surah)}</p>
-        </div>
-
-        {/* Box D — Verses */}
-        <div className="px-5 py-4 text-center">
-          <p className={`${LABEL_CLS} text-gray-400 dark:text-gray-400`}>Verses</p>
-          <p className={`${VALUE_CLS} text-gray-800 dark:text-gray-100`}>{surah.verse_count ?? '—'}</p>
-        </div>
-      </div>
-
-      {/* ── Row 3.5: Facts badge strip (only when facts exist) ── */}
-      {visibleFacts.length > 0 && (
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-100 dark:border-emerald-800 px-4 py-3 flex flex-wrap gap-1.5">
-          {visibleFacts.map((fact) => (
-            <span
-              key={fact.id}
-              className={`rounded-full text-[10px] px-2.5 py-1 font-semibold ${factBadgeClass(fact.hadith_grade)}`}
+      {/* ── Info tab ── */}
+      {tab === 'info' && (
+        <>
+          {/* Row 2: Arabic + English + Meaning */}
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-3 text-center gap-1.5 bg-white dark:bg-gray-800">
+            <p
+              dir="rtl"
+              className="text-4xl font-bold text-gray-900 dark:text-gray-100 leading-snug"
+              style={{ fontFamily: "'Amiri', serif" }}
             >
-              {fact.title}
+              {surah.name_arabic}
+            </p>
+            <p className="text-base font-bold text-gray-700 dark:text-gray-200 mt-1">
+              {surah.name_english}
+            </p>
+            {surah.name_meaning && (
+              <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                &ldquo;{surah.name_meaning}&rdquo;
+              </p>
+            )}
+          </div>
+
+          {/* Row 3: Juz | Verses */}
+          <div className="grid grid-cols-2 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
+            <div className="px-4 py-3 border-r border-gray-100 dark:border-gray-600 text-center">
+              <p className={`${LABEL_CLS} text-gray-400 dark:text-gray-400`}>Juz</p>
+              <p className="text-xl font-black leading-tight text-gray-800 dark:text-gray-100 whitespace-nowrap">{juzLabel(surah)}</p>
+            </div>
+            <div className="px-4 py-3 text-center">
+              <p className={`${LABEL_CLS} text-gray-400 dark:text-gray-400`}>Verses</p>
+              <p className={`${VALUE_CLS} text-gray-800 dark:text-gray-100`}>{surah.verse_count ?? '—'}</p>
+            </div>
+          </div>
+
+          {/* Row 4: Neighbouring surahs footer */}
+          <div className="flex items-center justify-between px-4 py-2 bg-emerald-600 text-white border-t border-emerald-400/40 rounded-b-3xl overflow-hidden">
+            <span className="text-xs truncate max-w-[45%] text-white">
+              {prevSurah ? `← ${prevSurah.name_english}` : ''}
             </span>
+            <span className="text-xs truncate max-w-[45%] text-right text-white">
+              {nextSurah ? `${nextSurah.name_english} →` : ''}
+            </span>
+          </div>
+        </>
+      )}
+
+      {/* ── Facts tab ── */}
+      {tab === 'facts' && (
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-white dark:bg-gray-800 rounded-b-3xl overflow-hidden">
+          {allFacts.length === 0 ? (
+            <p className="text-sm text-gray-400 dark:text-gray-500 text-center pt-6">No facts yet.</p>
+          ) : allFacts.map((fact) => (
+            <div
+              key={fact.id}
+              className="rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 px-3 py-2.5 space-y-1"
+            >
+              <p className="text-xs font-bold text-gray-800 dark:text-gray-100">{fact.title}</p>
+              {fact.description && (
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">{fact.description}</p>
+              )}
+              {fact.hadith_grade && (
+                <span className={`inline-block rounded-full text-[10px] px-2 py-0.5 font-semibold ${factBadgeClass(fact.hadith_grade)}`}>
+                  {fact.hadith_grade}
+                </span>
+              )}
+            </div>
           ))}
         </div>
       )}
-
-      {/* ── Row 4: Neighbouring surahs footer ── */}
-      <div className="flex items-center justify-between px-5 py-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
-        <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[45%]">
-          {prevSurah ? `← ${prevSurah.name_english}` : ''}
-        </span>
-        <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[45%] text-right">
-          {nextSurah ? `${nextSurah.name_english} →` : ''}
-        </span>
-      </div>
 
     </div>
   )
 }
 
 export default function SurahCard({ surah, prevSurah, nextSurah, active, facts }: SurahCardProps) {
-  if (!active) return <PeekCard surah={surah} />
+  if (!active) return null
   return <ActiveCard surah={surah} prevSurah={prevSurah} nextSurah={nextSurah} facts={facts} />
 }
